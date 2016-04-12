@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" version="2.5" client="site" method="upgrade">
+	<name>Lyquix Events for FLEXIcontent</name>
+	<author>Lyquix</author>
+	<creationDate>2016-02-22</creationDate>
+	<copyright>(c) Lyquix</copyright>
+	<license>GNU/GPL v2</license>
+	<authorEmail>info@lyquix.com</authorEmail>
+	<authorUrl>http://www.lyquix.com</authorUrl>
+	<version>2.1.0</version>
+	<description>Generates a list of Upcoming Events from Flexicontent Items</description>
+	<files>
+		<filename>mod_lyquix_events.xml</filename>
+		<filename module="mod_lyquix_events">mod_lyquix_events.php</filename>
+		<filename>index.html</filename>
+		<filename>helper.php</filename>
+		<folder>elements</folder>
+		<folder>tmpl</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">en-GB.mod_lyquix_events.ini</language>
+	</languages>
+	<config>
+		<fields name="params" addfieldpath="modules/mod_lyquix_events/elements">
+			<fieldset name="basic">
+				<field name="" type="separator" default="MOD_LYQUIX_EVENTS_LIST" level="level1" menu="hide" />
+				<field name="cats_scope" type="radio" default="0" label="MOD_LYQUIX_EVENTS_CAT_SCOPE" description="MOD_LYQUIX_EVENTS_CAT_SCOPE_DESC" class="btn-group btn-group-yesno">
+					<option value="0">MOD_LYQUIX_EVENTS_INCLUDE</option>
+					<option value="1">MOD_LYQUIX_EVENTS_EXCLUDE</option>
+				</field>
+				<field name="cats" type="flexicategories" multiple="true" label="MOD_LYQUIX_EVENTS_CATEGORIES" description="MOD_LYQUIX_EVENTS_CATEGORIES_DESC" />
+				<field name="types_scope" type="radio" default="0" label="MOD_LYQUIX_EVENTS_TYPES_SCOPE" description="MOD_LYQUIX_EVENTS_TYPES_SCOPE_DESC" class="btn-group group-fcinfo">
+					<option value="0">MOD_LYQUIX_EVENTS_INCLUDE</option>
+					<option value="1">MOD_LYQUIX_EVENTS_EXCLUDE</option>
+				</field>
+				<field name="types" type="types" multiple="true" size="5" label="MOD_LYQUIX_EVENTS_TYPES" description="MOD_LYQUIX_EVENTS_TYPES_DESC" />
+				<field name="event_date_fields" multiple="true" type="fields" default="" field_type="date" fieldidasvalue="id" label="MOD_LYQUIX_EVENTS_EVENT_DATE_FIELDS" description="MOD_LYQUIX_EVENTS_EVENT_DATE_FIELDS_DESC" />
+				<field name="range_start" type="radio" default="0" label="MOD_LYQUIX_EVENTS_RANGE_START" description="MOD_LYQUIX_EVENTS_RANGE_START_DESC" class="btn-group group-fcinfo">
+					<option value="0">Day</option>
+					<option value="1">Week</option>
+					<option value="2">Month</option>
+				</field>
+				<field name="week_start" type="radio" default="0" label="MOD_LYQUIX_EVENTS_WEEK_START" description="MOD_LYQUIX_EVENTS_WEEK_START_DESC" class="btn-group group-fcinfo">
+					<option value="0">Monday</option>
+					<option value="1">Sunday</option>
+				</field>
+				<field name="date_range" type="radio" default="0" label="MOD_LYQUIX_EVENTS_DATE_RANGE" description="MOD_LYQUIX_EVENTS_DATE_RANGE_DESC" class="btn-group group-fcinfo">
+					<option value="0">None</option>
+					<option value="1">Days</option>
+					<option value="2">Weeks</option>
+					<option value="3">Months</option>
+				</field>
+				<field name="range_length" type="text" default="1" size="3" label="MOD_LYQUIX_EVENTS_RANGE_LENGTH" description="MOD_LYQUIX_EVENTS_RANGE_LENGTH_DESC" />
+				<field name="url_parameter" type="text" default="date" size="3" label="MOD_LYQUIX_EVENTS_URL_PARAMETER" description="MOD_LYQUIX_EVENTS_URL_PARAMETER_DESC" />
+				<field name="count" type="text" default="5" size="3" label="MOD_LYQUIX_EVENTS_COUNT" description="MOD_LYQUIX_EVENTS_COUNT_DESC" />
+				<field name="item_scope" type="radio" default="1" label="MOD_LYQUIX_EVENTS_CURITEM_SCOPE" description="MOD_LYQUIX_EVENTS_CURITEM_DESC" class="btn-group group-fcinfo">
+					<option value="0">MOD_LYQUIX_EVENTS_INCLUDE</option>
+					<option value="1">MOD_LYQUIX_EVENTS_EXCLUDE</option>
+				</field>
+				<field name="lang_scope" type="radio" default="1" label="MOD_LYQUIX_EVENTS_CURLANG_SCOPE" description="MOD_LYQUIX_EVENTS_CURLANG_DESC" class="btn-group group-fcinfo">
+					<option value="0">MOD_LYQUIX_EVENTS_ALL</option>
+					<option value="1">MOD_LYQUIX_EVENTS_CURRENT_ONLY</option>
+				</field>
+				<field name="html_json" type="radio" default="html" label="MOD_LYQUIX_EVENTS_HTML_JSON_OUTPUT" description="MOD_LYQUIX_EVENTS_HTML_JSON_OUTPUT_DESC" class="btn-group group-fcinfo">
+					<option value="html">MOD_LYQUIX_EVENTS_HTML_ONLY</option>
+					<option value="html+json">MOD_LYQUIX_EVENTS_HTML_AND_JSON</option>
+					<option value="json">MOD_LYQUIX_EVENTS_JSON_ONLY</option>
+				</field>
+			</fieldset>
+			<fieldset name="MOD_LYQUIX_EVENTS_DISPLAY_PARAMS" label="MOD_LYQUIX_EVENTS_DISPLAY_PARAMS">
+				<field name="layout_order" type="lqxmoditemslayout"  options="image,title,date,author,intro,fields,readmore" default="image,title,date,author,intro,fields,readmore" label="MOD_LYQUIX_EVENTS_LAYOUT_ORDER" description="MOD_LYQUIX_EVENTS_LAYOUT_ORDER_DESC" />
+				<field name="" type="separator" default="MOD_LYQUIX_EVENTS_TITLE" level="level1" menu="hide" />
+				<field name="title_field" type="fields" default="title" field_type="title,text,textarea,textselect,select,selectmultiple,checkbox,checkboximage,radio,radioimage,relateditems,relateditems_advanced" fieldnameasvalue="name" label="MOD_LYQUIX_EVENTS_TITLE_FIELD" description="MOD_LYQUIX_EVENTS_TITLE_FIELD_DESC" />
+				<field name="title_heading_level" type="list" default="3" label="MOD_LYQUIX_EVENTS_TITLE_HEADING" description="MOD_LYQUIX_EVENTS_TITLE_HEADING_DESC">
+					<option value="1">H1</option>
+					<option value="2">H2</option>
+					<option value="3">H3</option>
+					<option value="4">H4</option>
+					<option value="5">H5</option>
+					<option value="6">H6</option>
+				</field>
+				<field name="title_link" type="radio" default="1" label="MOD_LYQUIX_EVENTS_LINK_TITLE" description="MOD_LYQUIX_EVENTS_LINK_TITLE_DESC" class="btn-group btn-group-yesno">
+					<option value="0">MOD_LYQUIX_EVENTS_NO</option>
+					<option value="1">MOD_LYQUIX_EVENTS_YES</option>
+				</field>
+				<field name="title_length" type="text" default="100" size="4" label="MOD_LYQUIX_EVENTS_MAX_TITLE_LENGTH" description="MOD_LYQUIX_EVENTS_MAX_TITLE_LENGTH_DESC" />
+				<field name="" type="separator" default="MOD_LYQUIX_EVENTS_DATE_PARAMS" level="level1" menu="hide" />
+				<field name="date_fields" type="radio" default="created" label="MOD_LYQUIX_EVENTS_DISPLAY_DATE_TYPE" description="MOD_LYQUIX_EVENTS_DISPLAY_DATE_TYPE_DESC" class="btn-group group-fcinfo">
+					<option value="created">MOD_LYQUIX_EVENTS_DATE_CREATED</option>
+					<option value="modified">MOD_LYQUIX_EVENTS_DATE_MODIFIED</option>
+				</field>
+				<field name="date_format" type="list" default="DATE_FORMAT_LC3" label="MOD_LYQUIX_EVENTS_DATE_FORMAT" description="MOD_LYQUIX_EVENTS_DATE_FORMAT_DESC" >
+					<option value="DATE_FORMAT_LC">DATE_FORMAT_LC</option>
+					<option value="DATE_FORMAT_LC1">DATE_FORMAT_LC1</option>
+					<option value="DATE_FORMAT_LC2">DATE_FORMAT_LC2</option>
+					<option value="DATE_FORMAT_LC3">DATE_FORMAT_LC3</option>
+					<option value="DATE_FORMAT_LC4">DATE_FORMAT_LC4</option>
+					<option value="custom">MOD_LYQUIX_EVENTS_CUSTOM</option>
+				</field>
+				<field name="date_custom" type="text" default="" label="MOD_LYQUIX_EVENTS_CUSTOM_DATE_FORMAT" description="MOD_LYQUIX_EVENTS_CUSTOM_DATE_FORMAT_DESC" />
+				<field name="date_label" type="text" default="" label="MOD_LYQUIX_EVENTS_DATE_LABEL" description="MOD_LYQUIX_EVENTS_DATE_LABEL_DESC" filter="raw" />
+				<field name="" type="separator" default="MOD_LYQUIX_EVENTS_AUTHOR_PARAMS" level="level1" menu="hide" />
+				<field name="author_label" type="text" default="" label="MOD_LYQUIX_EVENTS_AUTHOR_LABEL" description="MOD_LYQUIX_EVENTS_AUTHOR_LABEL_DESC" filter="raw" />
+				<field name="" type="separator" default="MOD_LYQUIX_EVENTS_INTRO_PARAMS" level="level1" menu="hide" />
+				<field name="introtext_field" type="fields" default="" field_type="maintext,text,textarea" fieldnameasvalue="name" label="MOD_LYQUIX_EVENTS_INTRO_FIELD" description="MOD_LYQUIX_EVENTS_INTRO_FIELD_DESC" />
+				<field name="introtext_length" type="text" size="4" default="200" label="MOD_LYQUIX_EVENTS_MAX_INTRO_LENGTH" description="MOD_LYQUIX_EVENTS_MAX_INTRO_LENGTH_DESC" />
+				<field name="" type="separator" default="MOD_LYQUIX_EVENTS_IMAGE_PARAMS" level="level1" menu="hide" />
+				<field name="image_field" type="fcimage" valcolumn="name" default="" label="MOD_LYQUIX_EVENTS_IMAGE_SOURCE" description="MOD_LYQUIX_EVENTS_IMAGE_SOURCE_DESC" />
+				<field name="image_link" type="radio" default="1" label="MOD_LYQUIX_EVENTS_LINK_IMAGE" description="MOD_LYQUIX_EVENTS_LINK_IMAGE_DESC" class="btn-group btn-group-yesno">
+					<option value="0">MOD_LYQUIX_EVENTS_NO</option>
+					<option value="1">MOD_LYQUIX_EVENTS_YES</option>
+				</field>
+				<field name="image_align" type="radio" default="left" label="MOD_LYQUIX_EVENTS_IMAGE_ALIGN" description="MOD_LYQUIX_EVENTS_IMAGE_ALIGN_DESC" class="btn-group group-fcinfo">
+					<option value="left">MOD_LYQUIX_EVENTS_LEFT</option>
+					<option value="right">MOD_LYQUIX_EVENTS_RIGHT</option>
+					<option value="none">MOD_LYQUIX_EVENTS_NONE</option>
+				</field>
+				<field name="image_size" type="radio" default="s" label="MOD_LYQUIX_EVENTS_IMAGE_SIZE" description="MOD_LYQUIX_EVENTS_IMAGE_SIZE_DESC" class="btn-group group-fcinfo">
+					<option value="s">MOD_LYQUIX_EVENTS_SMALL</option>
+					<option value="m">MOD_LYQUIX_EVENTS_MEDIUM</option>
+					<option value="l">MOD_LYQUIX_EVENTS_LARGE</option>
+					<option value="custom">MOD_LYQUIX_EVENTS_CUSTOM</option>
+				</field>
+				<field name="image_resize" type="radio" default="1" label="MOD_LYQUIX_EVENTS_IMAGE_PROCESSING_METHOD" description="MOD_LYQUIX_EVENTS_IMAGE_PROCESSING_METHOD_DESC" class="btn-group group-fcinfo">
+					<option value="0">MOD_LYQUIX_EVENTS_IMAGE_SCALE</option>
+					<option value="1">MOD_LYQUIX_EVENTS_IMAGE_CROP</option>
+				</field>
+				<field name="image_width" type="text" size="4" default="960" label="MOD_LYQUIX_EVENTS_IMAGE_WIDTH" description="MOD_LYQUIX_EVENTS_IMAGE_WIDTH" />
+				<field name="image_height" type="text" size="4" default="540" label="MOD_LYQUIX_EVENTS_IMAGE_HEIGHT" description="MOD_LYQUIX_EVENTS_IMAGE_HEIGHT" />
+				<field name="" type="separator" default="MOD_LYQUIX_EVENTS_FIELDS_PARAMS" level="level1" menu="hide" />
+				<field name="fields_label" type="radio" default="0" label="MOD_LYQUIX_EVENTS_FIELDS_LABEL" description="MOD_LYQUIX_EVENTS_FIELDS_LABEL_DESC" class="btn-group btn-group-yesno">
+					<option value="0">MOD_LYQUIX_EVENTS_NO</option>
+					<option value="1">MOD_LYQUIX_EVENTS_YES</option>
+				</field>
+				<field name="fields" type="text" default="" label="MOD_LYQUIX_EVENTS_FIELDS" description="MOD_LYQUIX_EVENTS_FIELDS_DESC" />
+				<field name="" type="separator" default="MOD_LYQUIX_EVENTS_READMORE_PARAMS" level="level1" menu="hide" />
+				<field name="readmore_label" type="text" default="Read More" label="MOD_LYQUIX_EVENTS_READMORE_LABEL" description="MOD_LYQUIX_EVENTS_READMORE_LABEL_DESC" filter="raw" />
+			</fieldset>
+			<fieldset name="MOD_LYQUIX_EVENTS_ADVANCED" label="MOD_LYQUIX_EVENTS_ADVANCED">
+				<field name="" type="separator" default="MOD_LYQUIX_EVENTS_MODULE_STYLING" level="level1" menu="hide" />
+				<field name="moduleclass_sfx" type="text" default="" label="MOD_LYQUIX_EVENTS_MODULE_CLASS_SUFFIX" description="MOD_LYQUIX_EVENTS_MODULE_CLASS_SUFFIX_DESC" />
+				<field name="title_class" type="text" default="" label="MOD_LYQUIX_TITLE_CLASS" description="MOD_LYQUIX_TITLE_CLASS_DESC" />
+				<field name="date_class" type="text" default="" label="MOD_LYQUIX_DATE_CLASS" description="MOD_LYQUIX_DATE_CLASS_DESC" />
+				<field name="author_class" type="text" default="" label="MOD_LYQUIX_AUTHOR_CLASS" description="MOD_LYQUIX_AUTHOR_CLASS_DESC" />
+				<field name="intro_class" type="text" default="" label="MOD_LYQUIX_INTRO_CLASS" description="MOD_LYQUIX_INTRO_CLASS_DESC" />
+				<field name="image_class" type="text" default="" label="MOD_LYQUIX_IMAGE_CLASS" description="MOD_LYQUIX_IMAGE_CLASS_DESC" />
+				<field name="fields_class" type="text" default="" label="MOD_LYQUIX_FIELDS_CLASS" description="MOD_LYQUIX_FIELDS_CLASS_DESC" />
+				<field name="readmore_class" type="text" default="" label="MOD_LYQUIX_READMORE_CLASS" description="MOD_LYQUIX_READMORE_CLASS_DESC" />
+				<field name="modpretxt" type="text" default="" label="MOD_LYQUIX_EVENTS_MODPRETXT" description="MOD_LYQUIX_EVENTS_MODPRETXT_DESC" filter="raw" />
+				<field name="modpostxt" type="text" default="" label="MOD_LYQUIX_EVENTS_MODPOSTXT" description="MOD_LYQUIX_EVENTS_MODPOSTXT_DESC" filter="raw" />
+				<field name="itempretxt" type="text" default="" label="MOD_LYQUIX_EVENTS_ITEMPRETXT" description="MOD_LYQUIX_EVENTS_ITEMPRETXT_DESC" filter="raw" />
+				<field name="itempostxt" type="text" default="" label="MOD_LYQUIX_EVENTS_ITEMPOSTXT" description="MOD_LYQUIX_EVENTS_ITEMPOSTXT_DESC" filter="raw" />
+				<field name="" type="separator" default="MOD_LYQUIX_EVENTS_CUSTOM_RENDERING" level="level1" menu="hide" />
+				<field name="item_css_func" type="textarea" default="" label="MOD_LYQUIX_EVENTS_CSS_FUNC" description="MOD_LYQUIX_EVENTS_CSS_FUNC_DESC" filter="raw" />
+				<field name="field_render_func" type="textarea" default="" label="MOD_LYQUIX_EVENTS_FIELDS_RENDERING_FUNC" description="MOD_LYQUIX_EVENTS_FIELDS_RENDERING_FUNC_DESC" filter="raw" />
+				<field name="" type="separator" default="MOD_LYQUIX_EVENTS_CACHING" level="level1" menu="hide" />
+				<field name="cache" type="list" default="1" label="MOD_LYQUIX_EVENTS_CACHING" description="MOD_LYQUIX_EVENTS_CACHING_DESC">
+					<option value="1">MOD_LYQUIX_EVENTS_USE_GLOBAL</option>
+					<option value="2">MOD_LYQUIX_EVENTS_YES</option>
+					<option value="0">MOD_LYQUIX_EVENTS_NO</option>
+				</field>
+				<field name="cache_time" type="text" default="900" label="MOD_LYQUIX_EVENTS_CACHE_TIME" description="MOD_LYQUIX_EVENTS_CACHE_TIME_DESC" />
+			</fieldset>
+		</fields>
+	</config>
+</extension>
