@@ -90,7 +90,6 @@ class modLyquixEventsHelper {
 			}
 			//Select scope and range for dates
 			$range_start = $params->get('range_start',0);
-			print_r($range_start);
 			$date_range = $params->get('date_range',0);
 			$date_scope = $params->get('range_length',1);
 			if ($range_start == 1){
