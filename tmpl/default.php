@@ -286,10 +286,11 @@ if (count($items)) {
 
 					break;
 			}
-			$i++;
+			
 		}
 
 		$html .= $params -> get('itempostxt') . '</li>';
+		$i++;
 	}
 	$html .= $params -> get('modpostxt');
 	$html .= '</div>';
