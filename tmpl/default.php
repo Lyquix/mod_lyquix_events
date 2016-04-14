@@ -286,7 +286,7 @@ if (count($items)) {
 
 					break;
 			}
-
+			$i++;
 		}
 
 		$html .= $params -> get('itempostxt') . '</li>';
