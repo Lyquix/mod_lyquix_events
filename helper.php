@@ -22,29 +22,31 @@ class modLyquixEventsHelper {
 		$nullDate	= $db->getNullDate();
 		$date = JFactory::getDate();
 		$now = $date->toSql();
-		
+		$query = $db -> getQuery(true);
 		// build query
-		$query = "SELECT c.id FROM #__content AS c, #__flexicontent_cats_item_relations as fcir, #__flexicontent_fields_item_relations as ffir, #__flexicontent_items_ext as fie WHERE c.id = fcir.itemid AND c.id = fie.item_id AND c.state = 1 AND c.publish_up < '".$now."' AND (c.publish_down = '0000-00-00 00:00:00' OR c.publish_down > '".$now."')";
+		$query ->select ("c.id");
+		$query ->from ("#__content AS c, #__flexicontent_cats_item_relations as fcir, #__flexicontent_fields_item_relations as ffir, #__flexicontent_items_ext as fie"); 
+		$query-> where ("c.id = fcir.itemid AND c.id = fie.item_id AND c.state = 1 AND c.publish_up < ".$db->quote($now)." AND (c.publish_down = '0000-00-00 00:00:00' OR c.publish_down > ".$db->quote($now).")");
 		
 		// category scope
 		if($params->get('cats')) {
-			$query .= " AND fcir.catid ".($params->get('cats_scope',0) ? "NOT " : "")."IN (".implode(",",$params->get('cats')).")";
+			$query -> where("fcir.catid ".($params->get('cats_scope',0) ? "NOT " : "")."IN (".implode(",",$params->get('cats')).")");
 		}
 		
 		// types scope
 		if($params->get('types')) {
-			$query .= " AND fie.type_id ".($params->get('types_scope',0) ? "NOT " : "")."IN (".implode(",",$params->get('types')).")";
+			$query -> where("fie.type_id ".($params->get('types_scope',0) ? "NOT " : "")."IN (".implode(",",$params->get('types')).")");
 		}
 		
 		// current item scope
 		if($params->get('item_scope',1) && JRequest::getVar('option') == 'com_flexicontent' && JRequest::getVar('id') > 0) {
-			$query .= " AND c.id <> ".current(explode(":", JRequest::getVar('id')));
+			$query -> where("c.id <> ".current(explode(":", JRequest::getVar('id'))));
 		}
 		
 		// language scope
 		if($params->get('lang_scope',1)) {
 			$lang = flexicontent_html::getUserCurrentLang();
-			$query .= " AND (fie.language = '*' OR fie.language LIKE '".$lang."%')";
+			$query -> where("(fie.language = '*' OR fie.language LIKE '".$lang."%')");
 		}
 		
 		// remove unauthorized items
@@ -52,31 +54,35 @@ class modLyquixEventsHelper {
 		if(FLEXI_ACCESS && class_exists('FAccess')) {
 			$readperms = FAccess::checkUserElementsAccess($user->gmid, 'read');
 			if (isset($readperms['item']) && count($readperms['item']) ) {
-				$query .= " AND (c.access <= ".$gid." OR c.id IN (".implode(",", $readperms['item'])."))";
+				$query -> where("(c.access <= ".$gid." OR c.id IN (".implode(",", $readperms['item'])."))");
 			} 
 			else {
-				$query .= " AND c.access <= ".$gid;
+				$query -> where("c.access <= ".$gid);
 			}
 		} 
 		else {
-			$query .= " AND c.access <= ".$gid;
+			$query -> where("c.access <= ".$gid);
 		}
 		
 		//Narrow by date fields
 		$date_fields = $params->get('event_date_fields');
 		if (isset($date_fields)){
-			$query .= " AND c.id = ffir.item_id AND ";
+			$query -> where("c.id = ffir.item_id");
 			$x = 0;
+			print_r($date_fields);
+			$lastchild = end($date_fields);
+			print_r($lastchild);
 			foreach ($date_fields as $date_field){
 				if ($x == 0){
-					$query .="(ffir.field_id = ".$date_fields[$x];
+					$date_query = ("(ffir.field_id = ".$date_fields[$x]);
+				}else if ($date_field == $lastchild){
+					$date_query .=(" OR ffir.field_id = ".$date_fields[$x].")");	
 				}else{
-					$query .=" OR ffir.field_id = ".$date_fields[$x];	
+					$date_query .=(" OR ffir.field_id = ".$date_fields[$x]);	
 				}
 				$x++;
 			}
-			$query .= ")"; 
-			
+			$query-> where($date_query);
 			//Get either the current date, or a date set in the url
 			$url_param = $params->get('url_parameter','date');
 			
@@ -101,18 +107,18 @@ class modLyquixEventsHelper {
 				$page_date= DateTime::createFromFormat('Y-m-d', $page_date)->format('Y-m');
 				$page_date = $page_date."-01";
 			}
-			$query .=" AND ffir.value >= '".$page_date."'";
+			$query -> where("ffir.value >= ".$db->quote($page_date));
 			if ($date_range == 1){
 				$date = date("Y-m-d", strtotime($page_date." +".$date_scope." day"));
-				$query .=" AND ffir.value <= '".$date."'";
+				$query -> where("ffir.value <= ".$db->quote($date));
 			}else if ($date_range == 2){
 				$date = date("Y-m-d", strtotime($page_date." +".$date_scope." week"));
-				$query .=" AND ffir.value <= '".$date."'";
+				$query -> where("ffir.value <= ".$db->quote($date));
 			}else if ($date_range == 3){
 				$date = date("Y-m-d", strtotime($page_date." +".$date_scope." month"));
-				$query .=" AND ffir.value <= '".$date."'";
+				$query ->where("ffir.value <= ".$db->quote($date));
 			}
-			$query .=" ORDER BY ffir.value ASC";		
+			$query -> order("ffir.value ASC");		
 			// Execute query
 		}
 		$db->setQuery($query, 0);
