@@ -24,7 +24,7 @@ class modLyquixEventsHelper {
 		$now = $date->toSql();
 		$query = $db -> getQuery(true);
 		// build query
-		$query ->select ("c.id");
+		$query ->select ("DISTINCT c.id");
 		$query ->from ("#__content AS c, #__flexicontent_cats_item_relations as fcir, #__flexicontent_fields_item_relations as ffir, #__flexicontent_items_ext as fie"); 
 		$query-> where ("c.id = fcir.itemid AND c.id = fie.item_id AND c.state = 1 AND c.publish_up < ".$db->quote($now)." AND (c.publish_down = '0000-00-00 00:00:00' OR c.publish_down > ".$db->quote($now).")");
 		
